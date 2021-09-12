@@ -2,6 +2,7 @@ import * as AWS from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk'
 import {DocumentClient} from 'aws-sdk/clients/dynamodb'
 import {createLogger} from '../utils/logger'
+import {Todo} from "../../../../solution/Serverless-Todo-App/backend/src/models/Todo";
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
@@ -26,6 +27,15 @@ class TodoAccessImpl {
                 },
             }).promise();
         return result;
+    }
+
+    async createTodo(todo: Todo): Promise<Todo> {
+        this.documentClient.put({
+                TableName: this.todoTable,
+                Item: todo,
+            }).promise();
+
+        return todo;
     }
 
     private static createDynamoDBClient() {
