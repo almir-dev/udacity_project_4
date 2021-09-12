@@ -9,10 +9,10 @@ import { JwtPayload } from '../../auth/JwtPayload'
 
 const logger = createLogger('auth')
 
-// TODO: Provide a URL that can be used to download a certificate that can be used
+// TODO: Provide a URL that can be used to download a certificate that can be used - DONE
 // to verify JWT token signature.
 // To get this URL you need to go to an Auth0 page -> Show Advanced Settings -> Endpoints -> JSON Web Key Set
-const jwksUrl = '...'
+const jwksUrl = 'https://dev-390xjd3f.us.auth0.com/.well-known/jwks.json'
 
 export const handler = async (
   event: CustomAuthorizerEvent
@@ -55,13 +55,33 @@ export const handler = async (
 }
 
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
+  // TODO: Implement token verification - DONE
+  // You should implement it similarly to how it was implemented for the exercise for the lesson 5
+  // You can read more about how to do this here: https://auth0.com/blog/navigating-rs256-and-jwks
   const token = getToken(authHeader)
   const jwt: Jwt = decode(token, { complete: true }) as Jwt
 
-  // TODO: Implement token verification
-  // You should implement it similarly to how it was implemented for the exercise for the lesson 5
-  // You can read more about how to do this here: https://auth0.com/blog/navigating-rs256-and-jwks/
-  return undefined
+  if (!jwt) {
+    throw new Error("Bad token provided!");
+  }
+
+  const jwtKid = jwt.header.kid;
+  const jwks = await Axios.get(jwksUrl);
+
+  // Find first signed key
+  const signingKey = jwks.data.keys.filter((k) => k.kid === jwtKid)[0];
+
+  if (!signingKey) {
+    throw new Error(`Failed to find singled key for kid: '${jwtKid}'`);
+  }
+
+  const cert = createCert(signingKey);
+  return verify(token, cert, { algorithms: ["RS256"] }) as JwtPayload;
+}
+
+function createCert(signingKey: any) {
+  const x5c = signingKey.x5c;
+  return  `-----BEGIN CERTIFICATE-----\n${x5c[0]}\n-----END CERTIFICATE-----`;
 }
 
 function getToken(authHeader: string): string {
