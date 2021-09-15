@@ -29,3 +29,10 @@ export async function updateTodo(
 ): Promise<void> {
     TodoAccessService.updateTodo(todoId, updatedTodo, userId);
 }
+
+export async function deleteTodo(
+    todoId: String,
+    userId: String
+): Promise<void> {
+    TodoAccessService.deleteTodo(todoId, userId);
+}

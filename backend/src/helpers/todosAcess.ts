@@ -11,7 +11,7 @@ const XAWS = AWSXRay.captureAWS(AWS)
 // @ts-ignore
 const logger = createLogger('TodosAccess')
 
-// TODO: Implement the dataLayer logic
+// TODO: Implement the dataLayer logic- DONE
 
 class TodoAccessImpl {
     private readonly documentClient: DocumentClient = TodoAccessImpl.createDynamoDBClient();
@@ -66,6 +66,24 @@ class TodoAccessImpl {
                     "#name": "name",
                     "#dueDate": "dueDate",
                     "#done": "done",
+                },
+            }, handleError
+        );
+    }
+
+    async deleteTodo(todoId: String, userId: String): Promise<void> {
+        const handleError = (error: AWSError) => {
+            if (error) {
+                throw new Error("Error " + error);
+            }
+        }
+
+        this.documentClient.delete(
+            {
+                TableName: this.todoTable,
+                Key: {
+                    todoId,
+                    userId,
                 },
             }, handleError
         );

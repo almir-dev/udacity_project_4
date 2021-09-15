@@ -23,7 +23,7 @@ export const handler = middy(
 
       return {
           statusCode: 200,
-          body: JSON.stringify(true),
+          body: JSON.stringify({}),
       };
   }
 )
