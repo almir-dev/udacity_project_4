@@ -1,6 +1,7 @@
 import {TodoAccessService} from "./todosAcess";
 import {CreateTodoRequest} from "../../../../solution/Serverless-Todo-App/backend/src/requests/CreateTodoRequest";
 import {Todo} from "../../../../solution/Serverless-Todo-App/backend/src/models/Todo";
+import {UpdateTodoRequest} from "../../../../solution/Serverless-Todo-App/backend/src/requests/UpdateTodoRequest";
 
 // TODO: Implement businessLogic
 
@@ -19,4 +20,12 @@ export async function createTodo(todoId: String, createTodoRequest: CreateTodoRe
     } as Todo);
 
     return todo;
+}
+
+export async function updateTodo(
+    todoId: String,
+    updatedTodo: UpdateTodoRequest,
+    userId: String
+): Promise<void> {
+    TodoAccessService.updateTodo(todoId, updatedTodo, userId);
 }
