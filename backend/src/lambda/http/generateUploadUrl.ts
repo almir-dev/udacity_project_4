@@ -31,4 +31,4 @@ export const handler = middy(
     }
 )
 
-handler.use(httpErrorHandler()).use(cors({credentials: true})).use(httpErrorHandler());
+handler.use(cors({credentials: true})).use(httpErrorHandler());

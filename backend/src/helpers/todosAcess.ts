@@ -1,16 +1,11 @@
 import * as AWS from 'aws-sdk'
 import {AWSError} from 'aws-sdk'
-import * as AWSXRay from 'aws-xray-sdk'
 import {DocumentClient} from 'aws-sdk/clients/dynamodb'
-import {createLogger} from '../utils/logger'
 import {Todo} from "../../../../solution/Serverless-Todo-App/backend/src/models/Todo";
 import {UpdateTodoRequest} from "../../../../solution/Serverless-Todo-App/backend/src/requests/UpdateTodoRequest";
 
+const AWSXRay = require('aws-xray-sdk')
 const XAWS = AWSXRay.captureAWS(AWS)
-
-// @ts-ignore
-const logger = createLogger('TodosAccess')
-
 // TODO: Implement the dataLayer logic- DONE
 
 class TodoAccessImpl {
@@ -18,7 +13,7 @@ class TodoAccessImpl {
     private readonly todoTable = process.env.TODOS_TABLE;
     private readonly createdAtIndex = process.env.TODOS_CREATED_AT_INDEX;
     private readonly s3 = new XAWS.S3({signatureVersion: "v4"});
-    private readonly bucketName = process.env.IMAGES_S3_BUCKET;
+    private readonly bucketName = process.env.ATTACHMENT_S3_BUCKET;
     private readonly urlExpiration = process.env.S3_URL_EXPIRATION;
 
     async getAllTodosForUser(userId: String): Promise<any> {

@@ -13,8 +13,8 @@ provider:
   runtime: nodejs12.x
   lambdaHashingVersion: '20201221'
 
-  stage: ${opt:stage, 'dev'}
-  region: ${opt:region, 'us-east-1'}
+  stage: dev
+  region: us-east-1
 
   tracing:
     lambda: true
@@ -32,14 +32,14 @@ provider:
     # Enable API Gateway logs
     restApi: true
 
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - xray:PutTelemetryRecords
-            - xray:PutTraceSegments
-          Resource: "*"
+#  iam:
+#    role:
+#      statements:
+#        - Effect: Allow
+#          Action:
+#            - xray:PutTelemetryRecords
+#            - xray:PutTraceSegments
+#          Resource: "*"
 
 
 functions:
@@ -81,7 +81,7 @@ functions:
           cors: true
           authorizer: Auth
           request:
-            schemas:
+            schema:
               application/json: ${file(models/create-todo-model.json)}
     iamRoleStatements:
       - Effect: Allow
@@ -100,7 +100,7 @@ functions:
           cors: true
           authorizer: Auth
           request:
-            schemas:
+            schema:
               application/json: ${file(models/update-todo-model.json)}
     iamRoleStatements:
       - Effect: Allow
@@ -157,9 +157,9 @@ resources:
             gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
             gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
             gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
-          ResponseType: DEFAULT_4XX
-          RestApiId:
-            Ref: ApiGatewayRestApi
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
     
     # TODO: Create a DynamoDB table with local secondary index and a composite key
     TodosTable:
@@ -172,35 +172,42 @@ resources:
             AttributeType: S
           - AttributeName: createdAt
             AttributeType: S
-          KeySchema:
-            - AttributeName: userId
-              KeyType: HASH
-            - AttributeName: todoId
-              KeyType: RANGE
-          BillingMode: PAY_PER_REQUEST
-          TableName: ${self:provider.environment.TODOS_TABLE}
-          LocalSecondaryIndexes:
-            - IndexName: ${self:provider.environment.TODOS_CREATED_AT_INDEX}
-              KeySchema:
-                - AttributeName: userId
-                  KeyType: HASH
-                - AttributeName: createdAt
-                  KeyType: RANGE
-              Projection:
-                ProjectionType: ALL
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: todoId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.TODOS_TABLE}
+        LocalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.TODOS_CREATED_AT_INDEX}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
 
     # TODO: Complete the bucket properties below. -DONE
     # Do not forget to add the CorsConfiguration propoerty
     AttachmentsBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:provider.environment.IMAGES_S3_BUCKET}
-          CorsConfiguration:
-            CorsRules:
-              - AllowedOrigins: ["*"]
-                AllowedHeaders: ["*"]
-                AllowedMethods: [GET, PUT, POST, DELETE, HEAD]
-                MaxAge: 3000
+        BucketName: ${self:provider.environment.ATTACHMENT_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - "*"
+              AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
 
 
     # TODO: Complete the policy below and attach it to the bucket defined above -DONE
@@ -218,5 +225,5 @@ resources:
               Action:
                 - s3:GetObject
                 - s3:PutObject
-              Resource: "arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*"
+              Resource: "arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*"
         Bucket: !Ref AttachmentsBucket
