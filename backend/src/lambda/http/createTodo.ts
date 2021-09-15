@@ -7,6 +7,8 @@ import {CreateTodoRequest} from '../../requests/CreateTodoRequest'
 
 import {createTodo} from "../../helpers/todos";
 import {decodeJWTFromAPIGatewayEvent, parseUserId} from "../../auth/utils";
+import {createLogger} from "../../utils/logger";
+const logger = createLogger("todo");
 
 export const handler = middy(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -18,6 +20,12 @@ export const handler = middy(
         const userId = parseUserId(jwtToken);
 
         const content = await createTodo(todoId, todoRequest, userId);
+
+        logger.info("Successfully created TODO item", {
+            key: todoId,
+            userId: userId,
+            date: new Date().toISOString,
+        });
 
         return {
             statusCode: 201,

@@ -6,6 +6,8 @@ import {cors, httpErrorHandler} from 'middy/middlewares'
 import {UpdateTodoRequest} from '../../requests/UpdateTodoRequest'
 import {updateTodo} from "../../helpers/todos";
 import {decodeJWTFromAPIGatewayEvent, parseUserId} from "../../auth/utils";
+import {createLogger} from "../../utils/logger";
+const logger = createLogger("todo");
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -17,6 +19,12 @@ export const handler = middy(
       const userId = parseUserId(jwtToken);
 
       await updateTodo(todoId, updatedTodo, userId);
+
+      logger.info("Successfully updated TODO item", {
+          key: todoId,
+          userId: userId,
+          date: new Date().toISOString,
+      });
 
       return {
           statusCode: 200,

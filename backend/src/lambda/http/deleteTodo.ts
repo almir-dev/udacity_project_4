@@ -5,6 +5,8 @@ import * as middy from 'middy'
 import {cors, httpErrorHandler} from 'middy/middlewares'
 import {deleteTodo} from "../../helpers/todos";
 import {decodeJWTFromAPIGatewayEvent, parseUserId} from "../../auth/utils";
+import {createLogger} from "../../utils/logger";
+const logger = createLogger("todo");
 
 export const handler = middy(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -15,6 +17,12 @@ export const handler = middy(
         const userId = parseUserId(jwtToken);
 
         await deleteTodo(todoId, userId);
+
+        logger.info("Successfully deleted TODO item", {
+            key: todoId,
+            userId: userId,
+            date: new Date().toISOString,
+        });
 
         return {
             statusCode: 200,
