@@ -2,12 +2,9 @@ import 'source-map-support/register'
 
 import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda'
 import * as middy from 'middy'
-import {cors} from 'middy/middlewares'
-import {
-    decodeJWTFromAPIGatewayEvent,
-    parseUserId
-} from "../../../../../solution/Serverless-Todo-App/backend/src/auth/utils";
+import {cors, httpErrorHandler} from 'middy/middlewares'
 import {getTodosForUser} from "../../helpers/todos";
+import {decodeJWTFromAPIGatewayEvent, parseUserId} from "../../auth/utils";
 
 // TODO: Get all TODO items for a current user - DONE
 export const handler = middy(
@@ -26,4 +23,4 @@ export const handler = middy(
         };
     });
 
-handler.use(cors({credentials: true}));
+handler.use(cors({credentials: true})).use(httpErrorHandler());

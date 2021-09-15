@@ -36,3 +36,11 @@ export async function deleteTodo(
 ): Promise<void> {
     TodoAccessService.deleteTodo(todoId, userId);
 }
+
+export async function getPresignedImageUrl(
+    todoId: String,
+    imageId: String,
+    userId: String
+): Promise<string> {
+    return TodoAccessService.getPresignedImageUrl(todoId, imageId, userId);
+}

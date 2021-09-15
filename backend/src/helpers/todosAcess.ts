@@ -17,6 +17,9 @@ class TodoAccessImpl {
     private readonly documentClient: DocumentClient = TodoAccessImpl.createDynamoDBClient();
     private readonly todoTable = process.env.TODOS_TABLE;
     private readonly createdAtIndex = process.env.TODOS_CREATED_AT_INDEX;
+    private readonly s3 = new XAWS.S3({signatureVersion: "v4"});
+    private readonly bucketName = process.env.IMAGES_S3_BUCKET;
+    private readonly urlExpiration = process.env.S3_URL_EXPIRATION;
 
     async getAllTodosForUser(userId: String): Promise<any> {
         const result = this.documentClient
@@ -87,6 +90,35 @@ class TodoAccessImpl {
                 },
             }, handleError
         );
+    }
+
+    async getPresignedImageUrl(todoId: String, imageId: String, userId: String): Promise<string> {
+        const handleError = (error: AWSError) => {
+            if (error) {
+                throw new Error("Error " + error);
+            }
+        }
+
+        const attachmentUrl = await this.s3.getSignedUrl("putObject", {
+            Bucket: this.bucketName,
+            Key: imageId,
+            Expires: this.urlExpiration,
+        });
+
+        this.documentClient.update(
+            {
+                TableName: this.todoTable,
+                Key: {
+                    todoId,
+                    userId,
+                },
+                UpdateExpression: "set attachmentUrl = :attachmentUrl",
+                ExpressionAttributeValues: {
+                    ":attachmentUrl": `https://${this.bucketName}.s3.amazonaws.com/${imageId}`,
+                },
+            }, handleError
+        );
+        return attachmentUrl;
     }
 
     private static createDynamoDBClient() {

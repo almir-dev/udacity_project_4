@@ -3,11 +3,8 @@ import 'source-map-support/register'
 import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda'
 import * as middy from 'middy'
 import {cors, httpErrorHandler} from 'middy/middlewares'
-import {
-    decodeJWTFromAPIGatewayEvent,
-    parseUserId
-} from "../../../../../solution/Serverless-Todo-App/backend/src/auth/utils";
 import {deleteTodo} from "../../helpers/todos";
+import {decodeJWTFromAPIGatewayEvent, parseUserId} from "../../auth/utils";
 
 export const handler = middy(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
