@@ -16,9 +16,16 @@ provider:
   stage: dev
   region: us-east-1
 
-  tracing:
+  tracing: # Enable AWS X-Ray Tracing
     lambda: true
     apiGateway: true
+    iamRoleStatements: # Permissions here or under every function to trace
+      - Effect: 'Allow'           # xray tracing permissions
+        Action:
+          - 'xray:PutTraceSegments'             # Trace Segments
+          - 'xray:PutTelemetryRecords'          # Telemetry
+        Resource:
+          - '*'
 
   # Use these variables in the functions and resouorces section below. For example, 
   # ${self:provider.environment.ATTACHMENT_S3_BUCKET}
