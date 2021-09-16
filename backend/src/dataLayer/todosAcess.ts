@@ -11,7 +11,7 @@ const XAWS = AWSXRay.captureAWS(AWS)
 class TodoAccessImpl {
     private readonly documentClient: DocumentClient = TodoAccessImpl.createDynamoDBClient();
     private readonly todoTable = process.env.TODOS_TABLE;
-    private readonly createdAtIndex = process.env.TODOS_CREATED_AT_INDEX;
+    // private readonly createdAtIndex = process.env.TODOS_CREATED_AT_INDEX;
     private readonly s3 = new XAWS.S3({signatureVersion: "v4"});
     private readonly bucketName = process.env.ATTACHMENT_S3_BUCKET;
     private readonly urlExpiration = process.env.S3_URL_EXPIRATION;
@@ -20,12 +20,13 @@ class TodoAccessImpl {
         const result = this.documentClient
             .query({
                 TableName: this.todoTable,
-                IndexName: this.createdAtIndex,
                 KeyConditionExpression: "userId = :userId",
                 ExpressionAttributeValues: {
                     ":userId": userId,
                 },
-            }).promise();
+            })
+            .promise();
+
         return result;
     }
 

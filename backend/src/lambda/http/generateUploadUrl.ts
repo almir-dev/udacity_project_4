@@ -5,7 +5,7 @@ import * as middy from 'middy'
 import * as uuid from "uuid";
 import {cors, httpErrorHandler} from 'middy/middlewares'
 import {decodeJWTFromAPIGatewayEvent, parseUserId} from "../../auth/utils";
-import {getPresignedImageUrl} from "../../helpers/todos";
+import {getPresignedImageUrl} from "../../businessLogic/todos";
 
 
 export const handler = middy(

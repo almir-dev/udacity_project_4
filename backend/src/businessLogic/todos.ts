@@ -1,4 +1,4 @@
-import {TodoAccessService} from "./todosAcess";
+import {TodoAccessService} from "../dataLayer/todosAcess";
 import {CreateTodoRequest} from "../../../../solution/Serverless-Todo-App/backend/src/requests/CreateTodoRequest";
 import {Todo} from "../../../../solution/Serverless-Todo-App/backend/src/models/Todo";
 import {UpdateTodoRequest} from "../../../../solution/Serverless-Todo-App/backend/src/requests/UpdateTodoRequest";

@@ -5,7 +5,7 @@ import {cors, httpErrorHandler} from 'middy/middlewares'
 import * as uuid from "uuid";
 import {CreateTodoRequest} from '../../requests/CreateTodoRequest'
 
-import {createTodo} from "../../helpers/todos";
+import {createTodo} from "../../businessLogic/todos";
 import {decodeJWTFromAPIGatewayEvent, parseUserId} from "../../auth/utils";
 import {createLogger} from "../../utils/logger";
 const logger = createLogger("todo");
