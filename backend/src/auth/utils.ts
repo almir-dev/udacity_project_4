@@ -4,9 +4,9 @@ import {JwtPayload} from './JwtPayload'
 import {APIGatewayProxyEvent} from "aws-lambda";
 
 /**
- * Parse a JWT token and return a user id
+ * Parse a JWT token and return a getUser id
  * @param jwtToken JWT token to parse
- * @returns a user id from the JWT token
+ * @returns a getUser id from the JWT token
  */
 export function parseUserId(jwtToken: string): string {
     const decodedJwt = decode(jwtToken) as JwtPayload

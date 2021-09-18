@@ -89,7 +89,7 @@ functions:
           authorizer: Auth
           request:
             schema:
-              application/json: ${file(models/create-todo-model.json)}
+              application/json: ${file(models/create-user-model.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:

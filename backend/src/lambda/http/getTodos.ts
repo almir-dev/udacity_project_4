@@ -9,7 +9,7 @@ import {createLogger} from "../../utils/logger";
 
 const logger = createLogger("todo");
 
-// TODO: Get all TODO items for a current user - DONE
+// TODO: Get all TODO items for a current getUser - DONE
 export const handler = middy(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         const jwtToken = decodeJWTFromAPIGatewayEvent(event);
